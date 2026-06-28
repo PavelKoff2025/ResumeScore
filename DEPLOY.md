@@ -24,21 +24,21 @@
 
 ## 3. Secrets (обязательно для ИИ)
 
-**App settings → Secrets** и вставьте:
+**App settings → Secrets** и вставьте (шаблон: `.streamlit/secrets.toml.example`):
 
 ```toml
 DEEPSEEK_API_KEY = "sk-ваш-ключ"
 LLM_PROVIDER = "deepseek"
-APP_BASE_URL = "https://ВАШ-URL.streamlit.app"
+APP_BASE_URL = "https://resumescore-zjgmnauufoxcdnmuqsfu4d.streamlit.app"
 ```
 
-После деплоя скопируйте URL приложения из браузера и подставьте в `APP_BASE_URL` (нужно для share-ссылок и QR-кода).
+После сохранения нажмите **Reboot app**. Локальный `.env` на Streamlit Cloud **не используется** — только Secrets.
 
 Без ключей приложение работает в **демо-режиме** с тестовыми данными.
 
 ## 4. Проверка
 
-- Откройте URL вида `https://resumescore-xxxxx.streamlit.app`
+- Откройте [живое демо](https://resumescore-zjgmnauufoxcdnmuqsfu4d.streamlit.app/)
 - В sidebar: **«Загрузить демо-данные»** → **«Анализировать»**
 - Или вставьте ссылку hh.ru
 

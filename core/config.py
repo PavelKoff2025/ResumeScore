@@ -18,12 +18,12 @@ def _apply_streamlit_secrets() -> None:
 
         for key, value in st.secrets.items():
             if isinstance(value, str) and value.strip():
-                os.environ.setdefault(key, value)
+                os.environ[key] = value
             elif isinstance(value, dict):
                 for sub_key, sub_value in value.items():
                     env_key = str(sub_key).upper()
                     if str(sub_value).strip():
-                        os.environ.setdefault(env_key, str(sub_value))
+                        os.environ[env_key] = str(sub_value)
     except Exception:
         pass
 
@@ -173,7 +173,9 @@ def is_demo_mode(provider: str | None = None) -> bool:
     if choice == "auto":
         resolved = get_active_provider()
         return not is_provider_configured(resolved)
-    return False
+    if choice in PROVIDER_CHOICES:
+        return not is_provider_configured(choice)
+    return True
 
 
 def get_provider_label(provider: str | None = None) -> str:

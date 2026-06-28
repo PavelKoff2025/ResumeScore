@@ -77,7 +77,8 @@ class FrontendAgent:
             else:
                 st.info(
                     "🎭 **Демо-режим**: для выбранного провайдера нет API-ключа. "
-                    "Добавьте ключ в `.env` или выберите другого провайдера в боковой панели."
+                    "На Streamlit Cloud добавьте ключ в **Settings → Secrets**, "
+                    "локально — в `.env`."
                 )
         else:
             resolved = self.orchestrator.get_resolved_provider()
@@ -713,13 +714,16 @@ class FrontendAgent:
         elif selected == "deepseek":
             st.caption("Работает без VPN")
 
-        st.markdown("**Статус ключей в .env**")
+        st.markdown("**Статус API-ключей**")
         for provider_id, configured in get_providers_status().items():
             icon = "✅" if configured else "❌"
             st.caption(f"{icon} {get_provider_label(provider_id)}")
 
         if selected not in ("demo", "auto") and not is_provider_configured(selected):
-            st.warning(f"Ключ для {get_provider_label(selected)} не найден в `.env`")
+            st.warning(
+                f"Ключ для {get_provider_label(selected)} не найден. "
+                "Облако: **Settings → Secrets** · локально: `.env`"
+            )
         elif is_demo_mode(selected):
             st.caption("🎭 Анализ на тестовых данных")
 

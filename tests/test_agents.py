@@ -33,6 +33,8 @@ class TestProviderConfig:
         monkeypatch.setattr("core.config.OPENAI_API_KEY", "")
         monkeypatch.setattr("core.config.DEEPSEEK_API_KEY", "")
         assert is_demo_mode() is True
+        assert is_demo_mode("deepseek") is True
+        assert is_demo_mode("openai") is True
 
 
 class TestInputValidator:
@@ -77,9 +79,10 @@ class TestBackendAgent:
 
     def test_explicit_openai_without_key(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setattr("core.config.OPENAI_API_KEY", "")
+        monkeypatch.setattr("core.config.DEEPSEEK_API_KEY", "")
         agent = BackendAgent()
-        with pytest.raises(RuntimeError, match="OpenAI"):
-            agent.analyze("A" * 60, "B" * 60, provider="openai")
+        result = agent.analyze("A" * 60, "B" * 60, provider="openai")
+        assert result["meta"]["demo_mode"] is True
 
     def test_calculate_cost(self) -> None:
         agent = BackendAgent()

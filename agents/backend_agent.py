@@ -8,19 +8,16 @@ from typing import Any, Callable
 
 from openai import OpenAI
 
+import core.config as app_config
 from core.config import (
     COST_PER_1K_INPUT_TOKENS,
     COST_PER_1K_OUTPUT_TOKENS,
-    DEEPSEEK_API_KEY,
     DEEPSEEK_BASE_URL,
     DEEPSEEK_COST_PER_1K_INPUT,
     DEEPSEEK_COST_PER_1K_OUTPUT,
     DEEPSEEK_MODEL,
-    OPENAI_API_KEY,
     OPENAI_BASE_URL,
     OPENAI_MODEL,
-    YANDEX_API_KEY,
-    YANDEX_FOLDER_ID,
     get_provider_label,
     is_demo_mode,
     is_provider_configured,
@@ -342,13 +339,13 @@ class BackendAgent:
 
     def _call_deepseek(self, prompt: str) -> tuple[str, LLMUsage]:
         """Отправляет запрос в DeepSeek API (OpenAI-совместимый, без VPN)."""
-        if not DEEPSEEK_API_KEY:
+        if not app_config.DEEPSEEK_API_KEY:
             raise RuntimeError(
                 "DEEPSEEK_API_KEY не задан. Получите ключ на https://platform.deepseek.com"
             )
         return self._call_openai_compatible(
             prompt,
-            api_key=DEEPSEEK_API_KEY,
+            api_key=app_config.DEEPSEEK_API_KEY,
             base_url=DEEPSEEK_BASE_URL,
             model=DEEPSEEK_MODEL,
             provider="deepseek",
@@ -356,11 +353,11 @@ class BackendAgent:
 
     def _call_openai(self, prompt: str) -> tuple[str, LLMUsage]:
         """Отправляет запрос в OpenAI API."""
-        if not OPENAI_API_KEY:
+        if not app_config.OPENAI_API_KEY:
             raise RuntimeError("OPENAI_API_KEY не задан. Используйте DeepSeek или демо-режим")
         return self._call_openai_compatible(
             prompt,
-            api_key=OPENAI_API_KEY,
+            api_key=app_config.OPENAI_API_KEY,
             base_url=OPENAI_BASE_URL,
             model=OPENAI_MODEL,
             provider="openai",
@@ -371,12 +368,12 @@ class BackendAgent:
         import urllib.error
         import urllib.request
 
-        if not YANDEX_API_KEY or not YANDEX_FOLDER_ID:
+        if not app_config.YANDEX_API_KEY or not app_config.YANDEX_FOLDER_ID:
             raise RuntimeError("YANDEX_API_KEY и YANDEX_FOLDER_ID обязательны для YandexGPT")
 
         url = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
         payload = {
-            "modelUri": f"gpt://{YANDEX_FOLDER_ID}/yandexgpt-lite",
+            "modelUri": f"gpt://{app_config.YANDEX_FOLDER_ID}/yandexgpt-lite",
             "completionOptions": {"stream": False, "temperature": 0.2, "maxTokens": 4000},
             "messages": [
                 {
@@ -391,7 +388,7 @@ class BackendAgent:
             data=json.dumps(payload).encode("utf-8"),
             headers={
                 "Content-Type": "application/json",
-                "Authorization": f"Api-Key {YANDEX_API_KEY}",
+                "Authorization": f"Api-Key {app_config.YANDEX_API_KEY}",
             },
             method="POST",
         )
@@ -415,7 +412,7 @@ class BackendAgent:
         if provider == "deepseek":
             return self._call_openai_compatible(
                 prompt,
-                api_key=DEEPSEEK_API_KEY,
+                api_key=app_config.DEEPSEEK_API_KEY,
                 base_url=DEEPSEEK_BASE_URL,
                 model=DEEPSEEK_MODEL,
                 provider="deepseek",
@@ -423,7 +420,7 @@ class BackendAgent:
             )
         return self._call_openai_compatible(
             prompt,
-            api_key=OPENAI_API_KEY,
+            api_key=app_config.OPENAI_API_KEY,
             base_url=OPENAI_BASE_URL,
             model=OPENAI_MODEL,
             provider="openai",
@@ -435,12 +432,12 @@ class BackendAgent:
         import urllib.error
         import urllib.request
 
-        if not YANDEX_API_KEY or not YANDEX_FOLDER_ID:
+        if not app_config.YANDEX_API_KEY or not app_config.YANDEX_FOLDER_ID:
             raise RuntimeError("YANDEX_API_KEY и YANDEX_FOLDER_ID обязательны для YandexGPT")
 
         url = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
         payload = {
-            "modelUri": f"gpt://{YANDEX_FOLDER_ID}/yandexgpt-lite",
+            "modelUri": f"gpt://{app_config.YANDEX_FOLDER_ID}/yandexgpt-lite",
             "completionOptions": {"stream": False, "temperature": 0.3, "maxTokens": 4000},
             "messages": [
                 {"role": "system", "text": "Отвечай только запрошенным текстом на русском."},
@@ -452,7 +449,7 @@ class BackendAgent:
             data=json.dumps(payload).encode("utf-8"),
             headers={
                 "Content-Type": "application/json",
-                "Authorization": f"Api-Key {YANDEX_API_KEY}",
+                "Authorization": f"Api-Key {app_config.YANDEX_API_KEY}",
             },
             method="POST",
         )
