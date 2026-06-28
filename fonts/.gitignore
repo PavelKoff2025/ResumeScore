@@ -1,0 +1,3 @@
+# Шрифты для PDF (опционально, можно положить DejaVuSans.ttf)
+*.ttf
+!.gitkeep
