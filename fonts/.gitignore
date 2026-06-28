@@ -1,3 +1,4 @@
-# Шрифты для PDF (опционально, можно положить DejaVuSans.ttf)
+# Локальные шрифты, кроме DejaVu Sans (нужен для PDF с кириллицей в облаке)
 *.ttf
+!DejaVuSans.ttf
 !.gitkeep

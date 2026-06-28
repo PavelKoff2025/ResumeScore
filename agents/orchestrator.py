@@ -352,32 +352,35 @@ class Orchestrator:
         if getattr(self, "_ui_callback", None):
             self._ui_callback()
 
-    def _build_pdf_report(self, data: dict[str, Any]) -> bytes:
-        """Формирует PDF-отчёт по результатам анализа."""
+    def _resolve_pdf_font_path(self) -> Path:
+        """Возвращает путь к Unicode-шрифту для PDF с кириллицей."""
         from core.config import BASE_DIR
 
         font_candidates = [
             BASE_DIR / "fonts" / "DejaVuSans.ttf",
-            BASE_DIR / "fonts" / "ArialUnicode.ttf",
+            Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
             Path("/System/Library/Fonts/Supplemental/Arial Unicode.ttf"),
             Path("/Library/Fonts/Arial Unicode.ttf"),
-            Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
         ]
         font_path = next((path for path in font_candidates if path.exists()), None)
+        if font_path is None:
+            raise RuntimeError(
+                "Не найден Unicode-шрифт для PDF. "
+                "Добавьте fonts/DejaVuSans.ttf в репозиторий."
+            )
+        return font_path
+
+    def _build_pdf_report(self, data: dict[str, Any]) -> bytes:
+        """Формирует PDF-отчёт по результатам анализа."""
+        font_path = self._resolve_pdf_font_path()
 
         pdf = FPDF()
         pdf.set_auto_page_break(auto=True, margin=15)
         pdf.add_page()
-
-        if font_path:
-            pdf.add_font("UnicodeFont", "", str(font_path))
-            pdf.set_font("UnicodeFont", size=14)
-            title = "ResumeScore — Отчёт"
-            body_font = "UnicodeFont"
-        else:
-            pdf.set_font("Helvetica", size=14)
-            title = "ResumeScore - Report"
-            body_font = "Helvetica"
+        pdf.add_font("UnicodeFont", "", str(font_path))
+        pdf.set_font("UnicodeFont", size=14)
+        title = "ResumeScore — Отчёт"
+        body_font = "UnicodeFont"
 
         pdf.cell(0, 10, title, new_x="LMARGIN", new_y="NEXT")
 
