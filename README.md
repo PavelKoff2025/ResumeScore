@@ -1,8 +1,53 @@
-# ResumeScore
+# 🎯 ResumeScore
 
-Многоагентное веб-приложение для автоматического сопоставления резюме и вакансий с выдачей рекомендаций.
+**Умное сопоставление резюме и вакансий на базе LLM — за минуту вместо часов ручной проверки.**
 
-## Архитектура
+ResumeScore — это портфолио-проект и рабочий инструмент для соискателей: загрузите резюме и вакансию (текст, PDF, DOCX или **ссылку с hh.ru**) и получите процент совпадения, разбор по требованиям, рекомендации и готовые материалы для отклика.
+
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.32+-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Tests](https://img.shields.io/badge/tests-36%20passed-brightgreen)](#тесты)
+
+---
+
+## ✨ Зачем это нужно
+
+| Боль | Решение ResumeScore |
+|------|---------------------|
+| «Подхожу ли я на вакансию?» | **Match %** и цветовая матрица 🟢🟡🔴 |
+| «Что дописать в резюме?» | Топ-3 действия + **чек-лист** «сделано / не сделано» |
+| «Куда откликаться в первую очередь?» | **Сравнение нескольких вакансий** |
+| «Сколько платят на рынке?» | Медиана зарплаты с **hh.ru** |
+| «Нужно письмо и PDF» | **ИИ-письмо**, экспорт PDF, **QR-код** для телефона |
+
+---
+
+## 🚀 Быстрый старт
+
+```bash
+git clone https://github.com/PavelKoff2025/ResumeScore.git
+cd ResumeScore
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env        # добавьте DEEPSEEK_API_KEY или OPENAI_API_KEY
+streamlit run app.py
+```
+
+Откройте **http://localhost:8501** → в боковой панели **«Загрузить демо-данные»** или вставьте ссылку `https://hh.ru/vacancy/…`.
+
+### DeepSeek без VPN (рекомендуется для РФ)
+
+```env
+DEEPSEEK_API_KEY=sk-...
+```
+
+Приложение автоматически выберет DeepSeek, если OpenAI недоступен.
+
+---
+
+## 🧠 Архитектура: 3 агента
 
 ```
 Пользователь → Frontend-агент → Orchestrator → Backend-агент → LLM API
@@ -10,97 +55,98 @@
                     └──────────────────┴────────────────┘
 ```
 
-| Агент | Файл | Ответственность |
-|-------|------|-----------------|
-| Frontend | `agents/frontend_agent.py` | UI/UX, формы, визуализация |
-| Orchestrator | `agents/orchestrator.py` | Координация workflow, история |
-| Backend | `agents/backend_agent.py` | LLM, парсинг, валидация |
+| Агент | Файл | Роль |
+|-------|------|------|
+| **Frontend** | `agents/frontend_agent.py` | UI, формы, WOW-визуализации |
+| **Orchestrator** | `agents/orchestrator.py` | Pipeline, история, шаринг |
+| **Backend** | `agents/backend_agent.py` | LLM, парсинг, валидация |
 
-## Быстрый старт
+Поддерживаемые провайдеры: **OpenAI**, **DeepSeek**, **YandexGPT**, **демо-режим**.
 
-```bash
-cd ResumeScore
-python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-cp .env.example .env        # добавьте OPENAI_API_KEY
-streamlit run app.py
-```
+---
 
-Приложение откроется в браузере на `http://localhost:8501`.
+## 📦 Возможности
 
-## Демо-режим
+### Основное
+- Загрузка **PDF / DOCX / TXT** (вакансия и резюме)
+- Импорт вакансии по **ссылке hh.ru** (API + парсинг страницы)
+- Анализ с live-статусом агентов и прогресс-баром
+- Разбор по каждому требованию: доказательство из резюме + рекомендация
+- **Улучшение резюме** и **сопроводительное письмо** через ИИ
+- Экспорт **PDF / JSON**, копирование отчёта в буфер
 
-Если `OPENAI_API_KEY` не задан, приложение работает в **демо-режиме** с тестовыми данными:
-- Вакансия: «Специалист по промпт-инжинирингу и ИИ-разработке (Vibe Coding)»
-- Резюме: «Резюме_PI_VC.pdf»
+### Портфолио
+- Сравнение **нескольких вакансий** с одним резюме
+- Чек-лист рекомендаций с прогрессом
+- **История анализов** с датами и графиком прогресса
+- **Поделиться ссылкой** на результат (`?share=…`)
 
-Нажмите **«Загрузить демо-данные»** в боковой панели.
+### WOW-панель (для демо)
+- 🗺 **Карта навыков** — интерактивный граф «есть / частично / нет»
+- 💰 **Рынок** — медиана зарплаты по данным hh.ru
+- 🎮 **Геймификация** — «Вы на 73% готовы, осталось 27%»
+- 📱 **QR-код** — открыть результат на телефоне
 
-## Возможности
+---
 
-- Загрузка вакансии и резюме (текст или PDF/DOCX)
-- Анализ через OpenAI / YandexGPT
-- Статусы агентов в реальном времени
-- Прогресс-бар совпадения, таблица 🟢🟡🔴
-- Топ-3 рекомендации с чекбоксами
-- История последних 5 анализов
-- Экспорт JSON / PDF
-- Светлая и тёмная тема
-- Кнопка «Отмена»
+## 🖼 Скриншоты
 
-## Структура проекта
+> Добавьте скриншоты в `docs/screenshots/` и раскройте ссылку здесь для README на GitHub.
+
+---
+
+## 📁 Структура
 
 ```
 ResumeScore/
-├── app.py
-├── agents/
-│   ├── orchestrator.py
-│   ├── backend_agent.py
-│   └── frontend_agent.py
-├── core/
-│   ├── config.py
-│   ├── prompts.py
-│   ├── schemas.py
-│   └── demo_data.py
-├── utils/
-├── storage/
-├── ui/
-├── logs/
-└── tests/
+├── app.py                 # Точка входа Streamlit
+├── agents/                # Frontend, Orchestrator, Backend
+├── core/                  # Конфиг, промпты, схемы, демо-данные
+├── utils/                 # Парсеры, hh.ru, валидация
+├── storage/               # История, чек-лист, шаринг
+├── ui/                    # Компоненты и стили
+├── tests/                 # 36 unit-тестов
+└── logs/                  # Логи агентов
 ```
 
-## Логи
+---
 
-- `logs/orchestrator.log` — оркестратор
-- `logs/backend.log` — backend-агент
-- `logs/frontend.log` — frontend-агент
+## ⚙️ Переменные окружения
 
-## Тесты
+| Переменная | Описание |
+|------------|----------|
+| `OPENAI_API_KEY` | Ключ OpenAI |
+| `DEEPSEEK_API_KEY` | DeepSeek (без VPN) |
+| `LLM_PROVIDER` | `openai` · `deepseek` · `yandex` · `auto` |
+| `APP_BASE_URL` | URL для share-ссылок (по умолчанию `http://localhost:8501`) |
+| `MAX_HISTORY_ITEMS` | Размер истории (по умолчанию `20`) |
+
+Полный список — в [`.env.example`](.env.example).
+
+---
+
+## 🧪 Тесты
 
 ```bash
 pytest tests/ -v
 ```
 
-## Переменные окружения
+---
 
-| Переменная | Описание |
-|------------|----------|
-| `OPENAI_API_KEY` | Ключ OpenAI API |
-| `OPENAI_MODEL` | Модель (по умолчанию `gpt-4o-mini`) |
-| `DEEPSEEK_API_KEY` | Ключ DeepSeek — **работает без VPN** |
-| `DEEPSEEK_MODEL` | Модель DeepSeek (по умолчанию `deepseek-chat`) |
-| `LLM_PROVIDER` | `openai`, `deepseek` или `yandex` |
-| `YANDEX_API_KEY` | Ключ Yandex Cloud |
-| `YANDEX_FOLDER_ID` | ID каталога Yandex Cloud |
+## 🛣 Roadmap
 
-### DeepSeek без VPN
+- [ ] Деплой на Streamlit Cloud / VPS
+- [ ] Поддержка LinkedIn / Habr Career
+- [ ] Английский интерфейс
 
-Если OpenAI недоступен, достаточно добавить в `.env`:
+---
 
-```
-DEEPSEEK_API_KEY=sk-...
-```
+## 📄 Лицензия
 
-Приложение **автоматически переключится на DeepSeek**, даже если `LLM_PROVIDER=openai`.
-Явное указание: `LLM_PROVIDER=deepseek`.
+[MIT](LICENSE) © 2026 Pavel Koff
+
+---
+
+## ⭐ Если проект полезен
+
+Поставьте **Star** на GitHub — так его проще показать рекрутеру или ментору как кейс в портфолио.
