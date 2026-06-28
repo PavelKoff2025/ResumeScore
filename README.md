@@ -37,6 +37,12 @@ streamlit run app.py
 
 Откройте **http://localhost:8501** → в боковой панели **«Загрузить демо-данные»** или вставьте ссылку `https://hh.ru/vacancy/…`.
 
+### 🌐 Живое демо (Streamlit Cloud)
+
+Пошаговая инструкция: **[DEPLOY.md](DEPLOY.md)**
+
+После деплоя добавьте сюда ссылку: `https://your-app.streamlit.app`
+
 ### DeepSeek без VPN (рекомендуется для РФ)
 
 ```env
@@ -135,7 +141,7 @@ pytest tests/ -v
 
 ## 🛣 Roadmap
 
-- [ ] Деплой на Streamlit Cloud / VPS
+- [x] Деплой на Streamlit Cloud — см. [DEPLOY.md](DEPLOY.md)
 - [ ] Поддержка LinkedIn / Habr Career
 - [ ] Английский интерфейс
 

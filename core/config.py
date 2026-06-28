@@ -10,6 +10,26 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
+
+def _apply_streamlit_secrets() -> None:
+    """Подгружает ключи из Streamlit Cloud Secrets (share.streamlit.io)."""
+    try:
+        import streamlit as st
+
+        for key, value in st.secrets.items():
+            if isinstance(value, str) and value.strip():
+                os.environ.setdefault(key, value)
+            elif isinstance(value, dict):
+                for sub_key, sub_value in value.items():
+                    env_key = str(sub_key).upper()
+                    if str(sub_value).strip():
+                        os.environ.setdefault(env_key, str(sub_value))
+    except Exception:
+        pass
+
+
+_apply_streamlit_secrets()
+
 LOGS_DIR = BASE_DIR / "logs"
 DATA_DIR = BASE_DIR / "data"
 SHARES_DIR = BASE_DIR / "storage" / "shares"
@@ -57,17 +77,26 @@ PROVIDER_UI_LABELS: dict[str, str] = {
 }
 
 DEMO_VACANCY_PATH = Path(
-    os.getenv(
-        "DEMO_VACANCY_PATH",
-        "/Users/pavelkoff/Desktop/Специалист по промпт-инжинирингу и ИИ-разработке (Vibe Coding).docx",
-    )
+    os.getenv("DEMO_VACANCY_PATH", str(BASE_DIR / "data" / "demo_vacancy.docx"))
 )
 DEMO_RESUME_PATH = Path(
-    os.getenv(
-        "DEMO_RESUME_PATH",
-        "/Users/pavelkoff/Desktop/Резюме_PI_VC.pdf",
-    )
+    os.getenv("DEMO_RESUME_PATH", str(BASE_DIR / "data" / "demo_resume.pdf"))
 )
+
+
+def refresh_settings() -> None:
+    """Перечитывает .env и Streamlit Secrets (вызывается при старте приложения)."""
+    global OPENAI_API_KEY, DEEPSEEK_API_KEY, YANDEX_API_KEY, YANDEX_FOLDER_ID
+    global LLM_PROVIDER, APP_BASE_URL
+
+    load_dotenv(BASE_DIR / ".env", override=True)
+    _apply_streamlit_secrets()
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+    DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY", "")
+    YANDEX_API_KEY = os.getenv("YANDEX_API_KEY", "")
+    YANDEX_FOLDER_ID = os.getenv("YANDEX_FOLDER_ID", "")
+    LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai")
+    APP_BASE_URL = os.getenv("APP_BASE_URL", "http://localhost:8501")
 
 
 def is_provider_configured(provider: str) -> bool:
@@ -115,9 +144,6 @@ def get_active_provider() -> str:
         return "deepseek"
     if YANDEX_API_KEY.strip() and YANDEX_FOLDER_ID.strip():
         return "yandex"
-    return "openai"
-
-
     return "openai"
 
 
