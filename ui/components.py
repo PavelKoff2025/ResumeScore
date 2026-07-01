@@ -469,12 +469,26 @@ def render_paste_zone() -> str | None:
         label_visibility="collapsed",
     )
 
-    if st.button(
-        "📥 Заполнить вакансию из буфера",
-        key="hh_paste_apply",
-        type="primary",
-        use_container_width=True,
-    ):
+    col_apply, col_clear = st.columns([4, 1])
+    with col_apply:
+        apply_clicked = st.button(
+            "📥 Заполнить вакансию из буфера",
+            key="hh_paste_apply",
+            type="primary",
+            use_container_width=True,
+        )
+    with col_clear:
+        clear_clicked = st.button(
+            "Очистить",
+            key="hh_paste_clear",
+            use_container_width=True,
+        )
+
+    if clear_clicked:
+        st.session_state["hh_paste_buffer"] = ""
+        st.rerun()
+
+    if apply_clicked:
         text = st.session_state.get("hh_paste_buffer", "").strip()
         if not text:
             st.warning("Поле пустое. Вставьте ссылку на вакансию в поле выше (Ctrl+V).")
