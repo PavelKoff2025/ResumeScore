@@ -155,7 +155,7 @@ class FrontendAgent:
             else:
                 if cleaned:
                     self._apply_vacancy_to_form(title, cleaned)
-                    st.session_state["hh_paste_buffer"] = ""
+                    st.session_state["hh_paste_clear_pending"] = True
                     st.success(f"Вакансия загружена: **{title}** ({len(cleaned)} символов)")
                     st.rerun()
                 else:

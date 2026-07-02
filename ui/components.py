@@ -455,6 +455,9 @@ def render_paste_zone() -> str | None:
     Returns:
         Текст для загрузки, если нажата кнопка «Заполнить вакансию».
     """
+    if st.session_state.pop("hh_paste_clear_pending", False):
+        st.session_state["hh_paste_buffer"] = ""
+
     st.markdown("#### 📋 Вставить с HH.ru")
     st.caption(
         "Вставьте **ссылку** `https://hh.ru/vacancy/…` в поле ниже (Ctrl+V), "
@@ -485,7 +488,7 @@ def render_paste_zone() -> str | None:
         )
 
     if clear_clicked:
-        st.session_state["hh_paste_buffer"] = ""
+        st.session_state["hh_paste_clear_pending"] = True
         st.rerun()
 
     if apply_clicked:
